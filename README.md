@@ -1,92 +1,112 @@
-# Traffic Management AI (Jetson Deployment Pipeline)
+# 🚦 Smart Traffic Management System (YOLO + DQN)
 
-This repository contains the full hardware-in-the-loop Smart Traffic Light Controller using **YOLOv11** (vehicle detection) and **Deep Q-Network (DQN)** reinforcement learning (signal control) on the **NVIDIA Jetson Nano**.
+Welcome to the **Smart Traffic Management System**, a full hardware-in-the-loop traffic control pipeline combining state-of-the-art computer vision (YOLO) and Reinforcement Learning (Deep Q-Network). This project is specifically designed to handle the complexities of Indian traffic (heavy occlusion, high volume of 2-wheelers and 3-wheelers) and dynamically optimize traffic signal timings in a SUMO simulation environment. The inference pipeline is highly optimized for edge deployment on devices like the **NVIDIA Jetson Nano** (TensorRT FP16 compatible).
 
-## Project Architecture & Structure
+---
 
-The repository has been fully restructured for deployment. All experimental, training, and data-processing scripts have been archived safely.
+## 📖 Project Overview
+
+Traditional traffic lights operate on fixed timers, leading to inefficient traffic flow, congestion, and increased emissions. This project introduces a dynamic, AI-driven approach:
+1. **Perception**: A highly customized YOLO architecture processes live video feeds to detect and classify vehicles (2-wheelers, 3-wheelers, 4-wheelers) in real-time.
+2. **Decision**: A Deep Q-Network (DQN) reinforcement learning agent takes the aggregated vehicle counts and queue lengths as state inputs to dynamically decide whether to `KEEP` or `SWITCH` the current traffic signal phase.
+3. **Simulation**: The system interfaces directly with the SUMO (Simulation of Urban MObility) engine to simulate real-world traffic intersections and evaluate the agent's performance.
+
+---
+
+## 📊 Dataset
+
+The core dataset used to train the vision models is heavily balanced to prioritize traditionally occluded objects like 2-wheelers and 3-wheelers. Images have been scaled to a highly optimized 640x640 resolution to maximize mAP while ensuring real-time edge performance.
+
+- **Download Link**: [Traffic Dataset (640px) - Google Drive](https://drive.google.com/file/d/14agFUtavCnNSWXXxJ13kIy3gMMHv5hMI/view?usp=sharing)
+- **Size**: ~25.1 GB (uncompressed)
+- **Format**: YOLO format (Images + `.txt` labels)
+
+*Note: Extract the dataset into the `data/master_dataset_640/` directory before running the training scripts.*
+
+---
+
+## 🧠 Architecture & Methodology
+
+### 1. Vision Architecture (Custom YOLO11)
+To solve the challenge of detecting small, heavily occluded vehicles, we implemented a custom YOLO11 architecture (`models/yolo11-custom.yaml`):
+- **P2 Detection Head**: Added a 4th detection head at the P2 level (high-resolution feature map) specifically engineered to detect extremely small 2-wheelers.
+- **CBAM Injection**: Convolutional Block Attention Modules (CBAM) are injected into the backbone and neck to help the network focus on salient spatial and channel features. These are implemented using standard PyTorch operations to guarantee TensorRT compilation.
+- **Knowledge Distillation (KD)**: During training (`train_kd.py`), we use KL divergence to distill knowledge from a larger teacher model to a highly efficient student model.
+
+### 2. Inference Pipeline Enhancements
+- **Dynamic SAHI ROI**: Instead of passing the full 1080p frame, the detector dynamically crops the bottom 60% Region of Interest (ROI) and applies Slicing Aided Hyper Inference (SAHI) tiled processing.
+- **Vector-based Soft-NMS**: Implemented Gaussian Soft-NMS on the collected tile detections before re-mapping coordinates back to the global frame.
+
+### 3. Reinforcement Learning (DQN)
+The traffic controller is an autonomous RL agent interacting via TraCI (Traffic Control Interface).
+- **State Space (6-dim)**: 
+  - `[North, South, East, West]` lane queue lengths (normalized by 100).
+  - Intersection spillback count (normalized by 100).
+  - Time elapsed in the current green phase (normalized by 60s max limit).
+- **Action Space (2-dim)**:
+  - `0`: KEEP current phase.
+  - `1`: SWITCH to next phase.
+- **Reward Function**: Heavily penalizes high queue lengths, total waiting time, and frequent unnecessary signal switches.
+
+---
+
+## 📁 Repository Structure
 
 ```text
 .
-├── core/                   # Core AI modules
-│   ├── detector.py         # YOLOv11 wrapper and vision handling
-│   ├── dqn_model.py        # PyTorch DQN neural network architecture
-│   ├── dqn_controller.py   # State formulation and AI logic
-│   └── traffic_manager.py  # Orchestrator
-├── sumo/                   # Simulation interface (Laptop/Host side)
-│   ├── traci_client.py     # TraCI communication
-│   ├── runner.py           # SUMO simulation launcher
-│   └── sumo_config.sumocfg # Traffic network definition
-├── jetson/                 # Hardware specific deployment scripts
-│   ├── install.sh          # JetPack dependencies
-│   ├── check_gpu.py        # CUDA validation
-│   └── benchmark.py        # TensorRT / ONNX benchmarking
-├── utils/                  # Logging and helper utilities
+├── core/                   # Core AI modules (detector, state_builder, dqn_model, traffic_manager)
+├── sumo/                   # Simulation interface (TraCI client, SUMO config, network files)
+├── jetson/                 # Hardware specific deployment scripts (install, benchmark)
 ├── models/                 # Pretrained weights (best.pt, dqn_traffic_model.pth)
-├── videos/                 # Video feed sources (e.g. traffic.mp4)
-├── outputs/                # Logs and annotated videos
-├── data/                   # Large datasets (e.g., master_dataset_640)
-├── research_and_training/  # Archive of original training, data processing, & presentation scripts
-├── main.py                 # Live vision pipeline entry point (Jetson)
-├── main_sumo.py            # Hardware-in-the-loop demo entry point (Jetson)
+├── data/                   # Large datasets directory (Extract dataset here)
+├── research_and_training/  # Training scripts (YOLO, DQN, Distillation, Evaluation)
+├── utils/                  # Logging and helper utilities
+├── main.py                 # Live vision pipeline entry point (Jetson / PC)
+├── main_sumo.py            # Hardware-in-the-loop demo entry point (DQN + SUMO)
 └── system_controller.py    # Standalone system controller script
 ```
 
-## Setup on Jetson Nano (JetPack 4.6, Python 3.6+)
+---
 
-1. **Install dependencies:**
-```bash
-bash jetson/install.sh
-```
-2. **Verify CUDA and TensorRT:**
-```bash
-python3 jetson/check_gpu.py     # MUST output CUDA: True
-python3 jetson/benchmark.py     # Verify inference latency
-```
+## 🚀 How to Run
 
-## Running the System
+### Setup Dependencies
+1. Clone the repository and install the Python requirements:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. If deploying on an **NVIDIA Jetson Nano**:
+   ```bash
+   bash jetson/install.sh
+   python3 jetson/check_gpu.py
+   ```
 
 ### 1. Standalone Vision Pipeline
-To run just the vision pipeline (reading from `videos/traffic.mp4` or falling back to live camera):
+To test the YOLO vehicle detection locally on a test video or live feed:
 ```bash
 python3 main.py
 ```
 
 ### 2. Full Hardware-in-the-Loop Simulation (DQN + SUMO)
-This connects the Jetson hardware running the PyTorch DQN agent directly to a SUMO simulation (typically running on a laptop/workstation).
+This connects the PyTorch DQN agent directly to the SUMO simulation.
 
-1. **Start the simulation environment (Laptop):**
-```bash
-python3 sumo/runner.py --jetson
-```
-2. **Launch the AI agent (Jetson):**
-```bash
-python3 main_sumo.py <laptop-ip>  # e.g., 192.168.55.100 if using USB tethering
-```
+1. **Start the SUMO simulation environment:**
+   ```bash
+   python3 sumo/runner.py
+   ```
+2. **Launch the AI agent:**
+   *(In a new terminal window)*
+   ```bash
+   python3 main_sumo.py
+   ```
+   *Note: If running the simulation on a host PC and the AI on a Jetson, pass the host IP address to `main_sumo.py`.*
 
-To run everything locally on one machine for testing without the Jetson hardware:
-```bash
-python3 sumo/runner.py
-```
+### 3. Training the Models
+All training and evaluation scripts have been carefully organized in the `research_and_training/` directory. Ensure you have downloaded and extracted the Google Drive dataset to `data/master_dataset_640/` before initiating a training run.
 
-## Reinforcement Learning Details (DQN)
+- **Train Custom YOLO**: `python3 research_and_training/train_yolov11.py`
+- **Train via Knowledge Distillation**: `python3 research_and_training/train_kd.py`
+- **Train DQN Agent**: `python3 research_and_training/train_dqn.py`
 
-The state representation and actions have been explicitly mapped to the custom SUMO environment and must not be altered unless the model is retrained:
-
-- **State Space (6 dimensions):** 
-  - `[North, South, East, West]` queue lengths (normalized by 100).
-  - Intersection spillback count (normalized by 100).
-  - Time elapsed in current green phase (normalized by 60s max limit).
-- **Action Space (2 discrete actions):**
-  - `0`: KEEP current phase.
-  - `1`: SWITCH to next phase.
-
-*Safety Failsafes:* Hardcoded overrides guarantee a minimum green time of 5s, a maximum green time of 60s, and standard 4s yellow transition phases.
-
-## Re-Training & Archival Scripts
-The `research_and_training/` folder contains the legacy scripts used to build and evaluate this system:
-- `train_yolov11.py` & `train_microbatch.py`
-- `resize_dataset.py`, `health_scrubber.py`, etc.
-- `demos/presentation_demo.py` (The sequential presentation demo)
-
-Use these scripts if you intend to collect more data and retrain the models from scratch.
+---
+*Built to optimize traffic flow, reduce emissions, and run efficiently at the edge.*
