@@ -1,0 +1,10 @@
+train: master_dataset/images/train
+val: master_dataset/images/val
+
+nc: 5
+names:
+  0: 2_wheeler
+  1: 3_wheeler
+  2: 4_wheeler
+  3: heavy_vehicle
+  4: unknown

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nodes>
+    <!-- Central intersection acting as a traffic light -->
+    <node id="center" x="0.0" y="0.0" type="traffic_light"/>
+
+    <!-- Perimeter nodes representing the ends of the roads -->
+    <node id="n" x="0.0" y="200.0" type="priority"/>
+    <node id="s" x="0.0" y="-200.0" type="priority"/>
+    <node id="e" x="200.0" y="0.0" type="priority"/>
+    <node id="w" x="-200.0" y="0.0" type="priority"/>
+</nodes>

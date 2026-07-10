@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-06-23T14:05:23.495780+05:30 by Eclipse SUMO netconvert 1.27.0
+<netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <node-files value="intersection.nod.xml"/>
+        <edge-files value="intersection.edg.xml"/>
+    </input>
+
+    <output>
+        <output-file value="intersection.net.xml"/>
+        <plain-output-prefix value="plain"/>
+    </output>
+
+    <processing>
+        <lefthand value="true"/>
+    </processing>
+
+</netconvertConfiguration>
+-->
+
+<edges version="1.20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/edges_file.xsd">
+    <edge id="e_in" from="e" to="center" priority="1" numLanes="3" speed="16.67"/>
+    <edge id="e_out" from="center" to="e" priority="1" numLanes="3" speed="16.67"/>
+    <edge id="n_in" from="n" to="center" priority="1" numLanes="3" speed="16.67"/>
+    <edge id="n_out" from="center" to="n" priority="1" numLanes="3" speed="16.67"/>
+    <edge id="s_in" from="s" to="center" priority="1" numLanes="3" speed="16.67"/>
+    <edge id="s_out" from="center" to="s" priority="1" numLanes="3" speed="16.67"/>
+    <edge id="w_in" from="w" to="center" priority="1" numLanes="3" speed="16.67"/>
+    <edge id="w_out" from="center" to="w" priority="1" numLanes="3" speed="16.67"/>
+</edges>

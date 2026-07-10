@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<edges>
+    <!-- North Road -->
+    <edge id="n_in" from="n" to="center" priority="1" numLanes="3" speed="16.67"/>
+    <edge id="n_out" from="center" to="n" priority="1" numLanes="3" speed="16.67"/>
+
+    <!-- South Road -->
+    <edge id="s_in" from="s" to="center" priority="1" numLanes="3" speed="16.67"/>
+    <edge id="s_out" from="center" to="s" priority="1" numLanes="3" speed="16.67"/>
+
+    <!-- East Road -->
+    <edge id="e_in" from="e" to="center" priority="1" numLanes="3" speed="16.67"/>
+    <edge id="e_out" from="center" to="e" priority="1" numLanes="3" speed="16.67"/>
+
+    <!-- West Road -->
+    <edge id="w_in" from="w" to="center" priority="1" numLanes="3" speed="16.67"/>
+    <edge id="w_out" from="center" to="w" priority="1" numLanes="3" speed="16.67"/>
+</edges>

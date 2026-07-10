@@ -1,0 +1,27 @@
+# Datasets and Archives
+master_dataset/
+original/
+*.zip
+
+# Ignore specific large dataset directories
+data/master_dataset/
+data/master_dataset_640/
+
+# Weights
+*.pt
+*.pth
+*.engine
+*.onnx
+
+# Outputs and Logs
+outputs/
+runs/
+*.log
+
+# Cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

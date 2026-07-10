@@ -1,0 +1,7 @@
+degrees: 10.0
+hsv_s: 0.5
+hsv_v: 0.4
+mixup: 0.15
+mosaic: 0.8
+box: 8.5
+cls: 1.5

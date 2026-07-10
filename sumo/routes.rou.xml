@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes>
+    <!-- ============================================== -->
+    <!-- DRIVER PSYCHOLOGY & KINEMATICS                 -->
+    <!-- Sublane model enabled, arbitrary alignments    -->
+    <!-- ============================================== -->
+    <vTypeDistribution id="2_wheeler">
+        <vType id="2w_aggr" probability="0.4" vClass="motorcycle" length="2.0" width="0.8" accel="3.0" decel="4.5" sigma="0.9" tau="1.0" minGap="0.5" minGapLat="0.3" speedFactor="1.2" lcModel="SL2015" lcPushy="1.0" lcAssertive="1.0" latAlignment="arbitrary" color="255,50,50"/>
+        <vType id="2w_std"  probability="0.4" vClass="motorcycle" length="2.0" width="0.8" accel="2.5" decel="4.5" sigma="0.7" tau="1.0" minGap="1.0" minGapLat="0.3" speedFactor="1.0" lcModel="SL2015" latAlignment="compact" color="255,100,100"/>
+        <vType id="2w_caut" probability="0.2" vClass="motorcycle" length="2.0" width="0.8" accel="2.0" decel="4.5" sigma="0.5" tau="1.5" minGap="2.5" minGapLat="0.2" speedFactor="0.8" lcModel="SL2015" lcPushy="0.0" latAlignment="center" color="255,150,150"/>
+    </vTypeDistribution>
+
+    <vTypeDistribution id="3_wheeler">
+        <vType id="3w_aggr" probability="0.4" vClass="passenger" length="2.8" width="1.4" accel="2.0" decel="3.5" sigma="0.9" tau="1.0" minGap="0.5" minGapLat="0.2" speedFactor="1.2" maxSpeed="15.0" lcModel="SL2015" lcPushy="1.0" lcAssertive="1.0" latAlignment="arbitrary" color="50,255,50"/>
+        <vType id="3w_std"  probability="0.4" vClass="passenger" length="2.8" width="1.4" accel="1.5" decel="3.0" sigma="0.7" tau="1.0" minGap="1.0" minGapLat="0.2" speedFactor="1.0" maxSpeed="15.0" lcModel="SL2015" latAlignment="compact" color="100,255,100"/>
+        <vType id="3w_caut" probability="0.2" vClass="passenger" length="2.8" width="1.4" accel="1.0" decel="2.5" sigma="0.5" tau="1.5" minGap="2.5" minGapLat="0.3" speedFactor="0.8" maxSpeed="15.0" lcModel="SL2015" lcPushy="0.0" latAlignment="center" color="150,255,150"/>
+    </vTypeDistribution>
+
+    <vTypeDistribution id="4_wheeler">
+        <vType id="4w_aggr" probability="0.4" vClass="passenger" length="4.5" width="1.8" accel="2.5" decel="4.5" sigma="0.9" tau="1.0" minGap="0.5" minGapLat="0.3" speedFactor="1.2" lcModel="SL2015" lcPushy="1.0" lcAssertive="1.0" latAlignment="arbitrary" color="50,50,255"/>
+        <vType id="4w_std"  probability="0.4" vClass="passenger" length="4.5" width="1.8" accel="2.0" decel="4.0" sigma="0.7" tau="1.0" minGap="1.0" minGapLat="0.4" speedFactor="1.0" lcModel="SL2015" latAlignment="compact" color="100,100,255"/>
+        <vType id="4w_caut" probability="0.2" vClass="passenger" length="4.5" width="1.8" accel="1.5" decel="3.5" sigma="0.5" tau="1.5" minGap="2.5" minGapLat="0.5" speedFactor="0.8" lcModel="SL2015" lcPushy="0.0" latAlignment="center" color="150,150,255"/>
+    </vTypeDistribution>
+
+    <vTypeDistribution id="heavy_vehicle">
+        <vType id="hv_aggr" probability="0.4" vClass="bus" length="10.0" width="2.5" accel="1.2" decel="3.0" sigma="0.9" tau="1.0" minGap="1.0" minGapLat="0.5" speedFactor="1.1" maxSpeed="15.0" lcModel="SL2015" lcPushy="0.5" lcAssertive="0.5" latAlignment="compact" color="255,255,50"/>
+        <vType id="hv_std"  probability="0.4" vClass="bus" length="10.0" width="2.5" accel="1.0" decel="2.5" sigma="0.7" tau="1.5" minGap="2.0" minGapLat="0.5" speedFactor="1.0" maxSpeed="15.0" lcModel="SL2015" latAlignment="center" color="255,255,100"/>
+        <vType id="hv_caut" probability="0.2" vClass="bus" length="10.0" width="2.5" accel="0.8" decel="2.0" sigma="0.5" tau="2.0" minGap="4.0" minGapLat="0.8" speedFactor="0.8" maxSpeed="15.0" lcModel="SL2015" lcPushy="0.0" latAlignment="center" color="255,255,150"/>
+    </vTypeDistribution>
+
+    <!-- ============================================== -->
+    <!-- BASE BACKGROUND FLOWS (Non-Uniform Poisson)    -->
+    <!-- ============================================== -->
+    <!-- N Incoming Background -->
+    <flow id="base_n_2_wheeler_str" type="2_wheeler" begin="0" end="3600" vehsPerHour="270" from="n_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="base_n_2_wheeler_lft" type="2_wheeler" begin="0" end="3600" vehsPerHour="180" from="n_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="base_n_2_wheeler_rgt" type="2_wheeler" begin="0" end="3600" vehsPerHour="150" from="n_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="base_n_3_wheeler_str" type="3_wheeler" begin="0" end="3600" vehsPerHour="135" from="n_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="base_n_3_wheeler_lft" type="3_wheeler" begin="0" end="3600" vehsPerHour="90" from="n_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="base_n_3_wheeler_rgt" type="3_wheeler" begin="0" end="3600" vehsPerHour="75" from="n_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="base_n_4_wheeler_str" type="4_wheeler" begin="0" end="3600" vehsPerHour="240" from="n_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="base_n_4_wheeler_lft" type="4_wheeler" begin="0" end="3600" vehsPerHour="80" from="n_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="base_n_4_wheeler_rgt" type="4_wheeler" begin="0" end="3600" vehsPerHour="80" from="n_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="base_n_heavy_vehicle_str" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="85" from="n_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="base_n_heavy_vehicle_lft" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="10" from="n_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="base_n_heavy_vehicle_rgt" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="5" from="n_in" to="w_out" departLane="best" departPos="random_free"/>
+
+    <!-- S Incoming Background -->
+    <flow id="base_s_2_wheeler_str" type="2_wheeler" begin="0" end="3600" vehsPerHour="270" from="s_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="base_s_2_wheeler_lft" type="2_wheeler" begin="0" end="3600" vehsPerHour="180" from="s_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="base_s_2_wheeler_rgt" type="2_wheeler" begin="0" end="3600" vehsPerHour="150" from="s_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="base_s_3_wheeler_str" type="3_wheeler" begin="0" end="3600" vehsPerHour="135" from="s_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="base_s_3_wheeler_lft" type="3_wheeler" begin="0" end="3600" vehsPerHour="90" from="s_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="base_s_3_wheeler_rgt" type="3_wheeler" begin="0" end="3600" vehsPerHour="75" from="s_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="base_s_4_wheeler_str" type="4_wheeler" begin="0" end="3600" vehsPerHour="240" from="s_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="base_s_4_wheeler_lft" type="4_wheeler" begin="0" end="3600" vehsPerHour="80" from="s_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="base_s_4_wheeler_rgt" type="4_wheeler" begin="0" end="3600" vehsPerHour="80" from="s_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="base_s_heavy_vehicle_str" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="85" from="s_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="base_s_heavy_vehicle_lft" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="10" from="s_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="base_s_heavy_vehicle_rgt" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="5" from="s_in" to="e_out" departLane="best" departPos="random_free"/>
+
+    <!-- E Incoming Background -->
+    <flow id="base_e_2_wheeler_str" type="2_wheeler" begin="0" end="3600" vehsPerHour="270" from="e_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="base_e_2_wheeler_lft" type="2_wheeler" begin="0" end="3600" vehsPerHour="180" from="e_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="base_e_2_wheeler_rgt" type="2_wheeler" begin="0" end="3600" vehsPerHour="150" from="e_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="base_e_3_wheeler_str" type="3_wheeler" begin="0" end="3600" vehsPerHour="135" from="e_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="base_e_3_wheeler_lft" type="3_wheeler" begin="0" end="3600" vehsPerHour="90" from="e_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="base_e_3_wheeler_rgt" type="3_wheeler" begin="0" end="3600" vehsPerHour="75" from="e_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="base_e_4_wheeler_str" type="4_wheeler" begin="0" end="3600" vehsPerHour="240" from="e_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="base_e_4_wheeler_lft" type="4_wheeler" begin="0" end="3600" vehsPerHour="80" from="e_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="base_e_4_wheeler_rgt" type="4_wheeler" begin="0" end="3600" vehsPerHour="80" from="e_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="base_e_heavy_vehicle_str" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="85" from="e_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="base_e_heavy_vehicle_lft" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="10" from="e_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="base_e_heavy_vehicle_rgt" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="5" from="e_in" to="n_out" departLane="best" departPos="random_free"/>
+
+    <!-- W Incoming Background -->
+    <flow id="base_w_2_wheeler_str" type="2_wheeler" begin="0" end="3600" vehsPerHour="270" from="w_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="base_w_2_wheeler_lft" type="2_wheeler" begin="0" end="3600" vehsPerHour="180" from="w_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="base_w_2_wheeler_rgt" type="2_wheeler" begin="0" end="3600" vehsPerHour="150" from="w_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="base_w_3_wheeler_str" type="3_wheeler" begin="0" end="3600" vehsPerHour="135" from="w_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="base_w_3_wheeler_lft" type="3_wheeler" begin="0" end="3600" vehsPerHour="90" from="w_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="base_w_3_wheeler_rgt" type="3_wheeler" begin="0" end="3600" vehsPerHour="75" from="w_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="base_w_4_wheeler_str" type="4_wheeler" begin="0" end="3600" vehsPerHour="240" from="w_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="base_w_4_wheeler_lft" type="4_wheeler" begin="0" end="3600" vehsPerHour="80" from="w_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="base_w_4_wheeler_rgt" type="4_wheeler" begin="0" end="3600" vehsPerHour="80" from="w_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="base_w_heavy_vehicle_str" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="85" from="w_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="base_w_heavy_vehicle_lft" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="10" from="w_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="base_w_heavy_vehicle_rgt" type="heavy_vehicle" begin="0" end="3600" vehsPerHour="5" from="w_in" to="s_out" departLane="best" departPos="random_free"/>
+
+    <!-- ============================================== -->
+    <!-- CHAOTIC SURGE PLATOONS                         -->
+    <!-- ============================================== -->
+    <!-- Platoon 1: 2_wheeler from N -->
+    <flow id="surge_0_n_2_wheeler_str" type="2_wheeler" begin="100" end="300" vehsPerHour="1350" from="n_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="surge_0_n_2_wheeler_lft" type="2_wheeler" begin="100" end="300" vehsPerHour="900" from="n_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="surge_0_n_2_wheeler_rgt" type="2_wheeler" begin="100" end="300" vehsPerHour="750" from="n_in" to="w_out" departLane="best" departPos="random_free"/>
+
+    <!-- Platoon 2: 3_wheeler from S -->
+    <flow id="surge_1_s_3_wheeler_str" type="3_wheeler" begin="1000" end="1200" vehsPerHour="540" from="s_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="surge_1_s_3_wheeler_lft" type="3_wheeler" begin="1000" end="1200" vehsPerHour="360" from="s_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="surge_1_s_3_wheeler_rgt" type="3_wheeler" begin="1000" end="1200" vehsPerHour="300" from="s_in" to="e_out" departLane="best" departPos="random_free"/>
+
+    <!-- Platoon 3: 4_wheeler from E -->
+    <flow id="surge_2_e_4_wheeler_str" type="4_wheeler" begin="2000" end="2200" vehsPerHour="720" from="e_in" to="w_out" departLane="best" departPos="random_free"/>
+    <flow id="surge_2_e_4_wheeler_lft" type="4_wheeler" begin="2000" end="2200" vehsPerHour="240" from="e_in" to="s_out" departLane="best" departPos="random_free"/>
+    <flow id="surge_2_e_4_wheeler_rgt" type="4_wheeler" begin="2000" end="2200" vehsPerHour="240" from="e_in" to="n_out" departLane="best" departPos="random_free"/>
+
+    <!-- Platoon 4: 2_wheeler from W -->
+    <flow id="surge_3_w_2_wheeler_str" type="2_wheeler" begin="3000" end="3200" vehsPerHour="1080" from="w_in" to="e_out" departLane="best" departPos="random_free"/>
+    <flow id="surge_3_w_2_wheeler_lft" type="2_wheeler" begin="3000" end="3200" vehsPerHour="720" from="w_in" to="n_out" departLane="best" departPos="random_free"/>
+    <flow id="surge_3_w_2_wheeler_rgt" type="2_wheeler" begin="3000" end="3200" vehsPerHour="600" from="w_in" to="s_out" departLane="best" departPos="random_free"/>
+
+</routes>

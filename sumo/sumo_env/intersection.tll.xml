@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tlLogics version="1.20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tllogic_file.xsd">
+    <tlLogic id="center" type="static" programID="0" offset="0">
+        <!-- North Green (indices 12-17) -->
+        <phase duration="30" state="rrrrrrrrrrrrGGGGGGrrrrrr"/>
+        <phase duration="4"  state="rrrrrrrrrrrryyyyyyrrrrrr"/>
+        
+        <!-- South Green (indices 0-5) -->
+        <phase duration="30" state="GGGGGGrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="4"  state="yyyyyyrrrrrrrrrrrrrrrrrr"/>
+        
+        <!-- East Green (indices 6-11) -->
+        <phase duration="30" state="rrrrrrGGGGGGrrrrrrrrrrrr"/>
+        <phase duration="4"  state="rrrrrryyyyyyrrrrrrrrrrrr"/>
+        
+        <!-- West Green (indices 18-23) -->
+        <phase duration="30" state="rrrrrrrrrrrrrrrrrrGGGGGG"/>
+        <phase duration="4"  state="rrrrrrrrrrrrrrrrrryyyyyy"/>
+    </tlLogic>
+</tlLogics>

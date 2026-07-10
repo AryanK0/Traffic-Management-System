@@ -1,0 +1,9 @@
+# Requirements for the LAPTOP (training / SUMO machine).
+# NOTE: On the Jetson Nano DO NOT pip install torch from here —
+# use jetson/install.sh which installs NVIDIA's Jetson wheel.
+numpy
+opencv-python
+torch
+ultralytics
+# SUMO's TraCI comes with SUMO itself (set SUMO_HOME), not from pip.
+# Optional: pip install eclipse-sumo traci sumolib

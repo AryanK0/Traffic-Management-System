@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-06-23T14:05:23.496133+05:30 by Eclipse SUMO netconvert 1.27.0
+<netconvertConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <node-files value="intersection.nod.xml"/>
+        <edge-files value="intersection.edg.xml"/>
+    </input>
+
+    <output>
+        <output-file value="intersection.net.xml"/>
+        <plain-output-prefix value="plain"/>
+    </output>
+
+    <processing>
+        <lefthand value="true"/>
+    </processing>
+
+</netconvertConfiguration>
+-->
+
+<connections version="1.20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/connections_file.xsd">
+    <connection from="e_in" to="s_out" fromLane="0" toLane="0"/>
+    <connection from="e_in" to="w_out" fromLane="0" toLane="0"/>
+    <connection from="e_in" to="w_out" fromLane="1" toLane="1"/>
+    <connection from="e_in" to="w_out" fromLane="2" toLane="2"/>
+    <connection from="e_in" to="n_out" fromLane="2" toLane="2"/>
+    <connection from="e_in" to="e_out" fromLane="2" toLane="2"/>
+
+    <connection from="e_out" to="e_in" fromLane="2" toLane="2"/>
+
+    <connection from="n_in" to="e_out" fromLane="0" toLane="0"/>
+    <connection from="n_in" to="s_out" fromLane="0" toLane="0"/>
+    <connection from="n_in" to="s_out" fromLane="1" toLane="1"/>
+    <connection from="n_in" to="s_out" fromLane="2" toLane="2"/>
+    <connection from="n_in" to="w_out" fromLane="2" toLane="2"/>
+    <connection from="n_in" to="n_out" fromLane="2" toLane="2"/>
+
+    <connection from="n_out" to="n_in" fromLane="2" toLane="2"/>
+
+    <connection from="s_in" to="w_out" fromLane="0" toLane="0"/>
+    <connection from="s_in" to="n_out" fromLane="0" toLane="0"/>
+    <connection from="s_in" to="n_out" fromLane="1" toLane="1"/>
+    <connection from="s_in" to="n_out" fromLane="2" toLane="2"/>
+    <connection from="s_in" to="e_out" fromLane="2" toLane="2"/>
+    <connection from="s_in" to="s_out" fromLane="2" toLane="2"/>
+
+    <connection from="s_out" to="s_in" fromLane="2" toLane="2"/>
+
+    <connection from="w_in" to="n_out" fromLane="0" toLane="0"/>
+    <connection from="w_in" to="e_out" fromLane="0" toLane="0"/>
+    <connection from="w_in" to="e_out" fromLane="1" toLane="1"/>
+    <connection from="w_in" to="e_out" fromLane="2" toLane="2"/>
+    <connection from="w_in" to="s_out" fromLane="2" toLane="2"/>
+    <connection from="w_in" to="w_out" fromLane="2" toLane="2"/>
+
+    <connection from="w_out" to="w_in" fromLane="2" toLane="2"/>
+
+</connections>
