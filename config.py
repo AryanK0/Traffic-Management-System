@@ -115,7 +115,7 @@ SUMO_CONFIG = SUMO_DIR / "sumo_config.sumocfg"
 
 SUMO_BINARY = "sumo-gui"
 
-USE_SUMO_GUI = True
+USE_SUMO_GUI = False
 
 TRAFFIC_LIGHT_ID = "center"
 

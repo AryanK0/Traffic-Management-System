@@ -27,7 +27,7 @@ PORT = 5555
 
 def main():
 
-    host = sys.argv[1] if len(sys.argv) > 1 else "192.168.55.100"
+    host = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
 
     print("[LOADING] DQN model...")
     dqn = DQNController()

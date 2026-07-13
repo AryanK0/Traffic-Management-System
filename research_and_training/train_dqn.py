@@ -28,14 +28,21 @@ class SumoEnv:
 
     def step(self, action):
         result = self.signal.apply(action)
-        self.client.step(5)
-        
-        # Continuous Delay Penalty Reward Function
-        reward = self.client.get_squared_delay_reward()
-        
-        next_state = self.client.get_state(self.signal.time_in_phase)
-        done = self.client.step_count >= self.max_steps
-        
+        try:
+            self.client.step(5)
+            
+            # Continuous Delay Penalty Reward Function
+            reward = self.client.get_squared_delay_reward()
+            
+            next_state = self.client.get_state(self.signal.time_in_phase)
+            import traci
+            done = self.client.step_count >= self.max_steps or traci.simulation.getMinExpectedNumber() <= 0
+        except Exception:
+            # SUMO naturally exits if all vehicles clear before max_steps
+            reward = 0
+            next_state = [0.0] * 6
+            done = True
+            
         return next_state, reward, done
 
     def close(self):
