@@ -97,7 +97,7 @@ SHOW_FPS = True
 # DQN CONFIGURATION
 # ============================================================
 
-STATE_SIZE = 6
+STATE_SIZE = 9
 
 ACTION_SIZE = 2
 

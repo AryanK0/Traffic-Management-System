@@ -5,6 +5,8 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import random
+import threading
+import time
 from collections import deque
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -27,12 +29,12 @@ class SumoEnv:
         return self.client.get_state(self.signal.time_in_phase)
 
     def step(self, action):
-        result = self.signal.apply(action)
         try:
+            result = self.signal.apply(action)
             self.client.step(5)
             
-            # Continuous Delay Penalty Reward Function
-            reward = self.client.get_squared_delay_reward()
+            # Differential Reward Function
+            reward = self.client.calculate_reward()
             
             next_state = self.client.get_state(self.signal.time_in_phase)
             import traci
@@ -40,7 +42,7 @@ class SumoEnv:
         except Exception:
             # SUMO naturally exits if all vehicles clear before max_steps
             reward = 0
-            next_state = [0.0] * 6
+            next_state = [0.0] * 9
             done = True
             
         return next_state, reward, done
@@ -51,6 +53,12 @@ class SumoEnv:
 
 def train_dqn():
     print("🚀 Starting DQN Training Pipeline...")
+    
+    # Force PyTorch to use all available CPU cores for intra-op parallelism
+    cores = os.cpu_count() or 4
+    torch.set_num_threads(cores)
+    print(f"⚡ PyTorch Multithreading enabled with {cores} cores.")
+    
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     sumo_binary = "sumo" 
@@ -60,7 +68,8 @@ def train_dqn():
         sumo_binary, 
         "-c", sumocfg_path, 
         "--no-step-log", "true", 
-        "--waiting-time-memory", "10000"
+        "--waiting-time-memory", "10000",
+        "--threads", str(cores)  # Tell SUMO to use all CPU cores
     ]
     
     env = SumoEnv(sumo_cmd, max_steps=3600)
@@ -76,37 +85,15 @@ def train_dqn():
     batch_size = 64
     gamma = 0.99
     
-    total_epochs = 100
-    exploration_phase = 0.35 * total_epochs
+    total_epochs = 1000
+    exploration_phase = 800
     
-    for epoch in range(total_epochs):
-        state = env.reset()
-        total_reward = 0
-        done = False
-        
-        # Epsilon Decay Schedule: 
-        # High exploration rate, decaying slowly over the first 35% of epochs.
-        if epoch < exploration_phase:
-            epsilon = 1.0 - (epoch / exploration_phase) * 0.95  # Decays from 1.0 to 0.05
-        else:
-            epsilon = 0.05  # Shifts to exploitation
-
-        while not done:
-            if random.random() < epsilon:
-                action = random.choice([0, 1])
-            else:
-                state_tensor = torch.FloatTensor(state).unsqueeze(0).to(device)
-                with torch.no_grad():
-                    q_values = model(state_tensor)
-                    action = q_values.argmax().item()
-                    
-            next_state, reward, done = env.step(action)
-            memory.append((state, action, reward, next_state, done))
-            
-            state = next_state
-            total_reward += reward
-            
-            # Training Step
+    # Asynchronous Training Setup
+    training_active = True
+    model_lock = threading.Lock()
+    
+    def background_training_loop():
+        while training_active:
             if len(memory) > batch_size:
                 batch = random.sample(memory, batch_size)
                 states, actions, rewards, next_states, dones = zip(*batch)
@@ -117,20 +104,57 @@ def train_dqn():
                 next_states_t = torch.FloatTensor(np.array(next_states)).to(device)
                 dones_t = torch.FloatTensor(dones).unsqueeze(1).to(device)
                 
-                q_values = model(states_t).gather(1, actions_t)
-                next_q_values = target_model(next_states_t).max(1)[0].unsqueeze(1)
-                target_q_values = rewards_t + gamma * next_q_values * (1 - dones_t)
+                with model_lock:
+                    q_values = model(states_t).gather(1, actions_t)
+                    next_q_values = target_model(next_states_t).max(1)[0].unsqueeze(1)
+                    target_q_values = rewards_t + gamma * next_q_values * (1 - dones_t)
+                    
+                    loss = criterion(q_values, target_q_values.detach())
+                    optimizer.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+            else:
+                time.sleep(0.01)  # Prevent maxing out CPU when memory is empty
                 
-                loss = criterion(q_values, target_q_values.detach())
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
+    train_thread = threading.Thread(target=background_training_loop)
+    train_thread.start()
+    
+    for epoch in range(total_epochs):
+        state = env.reset()
+        total_reward = 0
+        done = False
+        
+        # Epsilon Decay Schedule: 
+        if epoch < exploration_phase:
+            epsilon = 1.0 - (epoch / exploration_phase) * 0.95  # Decays from 1.0 to 0.05
+        else:
+            epsilon = 0.05  # Shifts to exploitation
+
+        while not done:
+            if random.random() < epsilon:
+                action = random.choice([0, 1])
+            else:
+                state_tensor = torch.FloatTensor(state).unsqueeze(0).to(device)
+                with model_lock:
+                    with torch.no_grad():
+                        q_values = model(state_tensor)
+                        action = q_values.argmax().item()
+                    
+            next_state, reward, done = env.step(action)
+            memory.append((state, action, reward, next_state, done))
+            
+            state = next_state
+            total_reward += reward
                 
         # Update target network occasionally
         if epoch % 5 == 0:
             target_model.load_state_dict(model.state_dict())
             
         print(f"Epoch {epoch+1}/{total_epochs} | Epsilon: {epsilon:.2f} | Total Reward: {total_reward:.2f}")
+
+    # Stop background thread gracefully
+    training_active = False
+    train_thread.join()
 
     env.close()
     

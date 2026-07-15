@@ -33,6 +33,7 @@ class TraciClient:
         self.tl_id = None
         self.num_phases = 8
         self.step_count = 0
+        self.last_wait_time = 0.0
 
     ########################################################
     # Start / Stop
@@ -88,18 +89,19 @@ class TraciClient:
 
         for edge in self.incoming:
             try:
-                halted = traci.edge.getLastStepHaltingNumber(edge)
+                veh_count = traci.edge.getLastStepVehicleNumber(edge)
+                halting_count = traci.edge.getLastStepHaltingNumber(edge)
+                
+                lane_count = traci.edge.getLaneNumber(edge)
+                edge_len = traci.lane.getLength(f"{edge}_0")
+                max_capacity = (edge_len / 7.5) * lane_count
+                
+                density = min(1.0, veh_count / max_capacity) if max_capacity > 0 else 0.0
+                queue_ratio = (halting_count / veh_count) if veh_count > 0 else 0.0
+                
+                state.extend([density, queue_ratio])
             except Exception:
-                halted = 0
-            state.append(float(halted) / 100.0)
-
-        spill = 0
-        for edge in self.outgoing:
-            try:
-                spill += traci.edge.getLastStepHaltingNumber(edge)
-            except Exception:
-                pass
-        state.append(float(spill) / 100.0)
+                state.extend([0.0, 0.0])
 
         state.append(float(time_in_phase) / 60.0)
 
@@ -119,20 +121,31 @@ class TraciClient:
 
         return sum(traci.edge.getWaitingTime(e) for e in self.incoming)
 
-    def get_squared_delay_reward(self):
+    def calculate_reward(self):
         """
-        Continuous Delay Penalty:
-        Calculates the wait time of every stationary vehicle, squares it,
-        and returns the negative sum.
+        Differential Wait Time Reward: R_t = W_{t-1} - W_t
+        Positive reward if wait time decreases (intersection clears).
+        Applies a severe penalty for teleporting vehicles (massive jam).
         """
-        penalty = 0.0
+        current_wait_time = 0.0
+        
         for edge in self.incoming:
             try:
                 vehicles = traci.edge.getLastStepVehicleIDs(edge)
                 for vid in vehicles:
-                    w = traci.vehicle.getWaitingTime(vid)
-                    penalty += w * w
+                    current_wait_time += traci.vehicle.getWaitingTime(vid)
             except Exception:
                 pass
-        return -penalty
+                
+        reward = self.last_wait_time - current_wait_time
+        
+        try:
+            if traci.simulation.getStartingTeleportNumber() > 0:
+                reward -= 10.0
+        except Exception:
+            pass
+
+        self.last_wait_time = current_wait_time
+        
+        return reward
 
